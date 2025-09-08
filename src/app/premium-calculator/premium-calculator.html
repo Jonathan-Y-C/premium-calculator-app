@@ -1,0 +1,40 @@
+<div class="container mt-5">
+	<h2 class="mb-4">Premium Calculator</h2>
+	<form (ngSubmit)="$event.preventDefault()" autocomplete="off" novalidate>
+		<div class="mb-3">
+			<label for="name" class="form-label">Name</label>
+			<input type="text" class="form-control" id="name" [(ngModel)]="name" name="name" required (input)="onInputChange()">
+			<div *ngIf="formTouched && !name" class="text-danger">Name is required.</div>
+		</div>
+		<div class="mb-3">
+			<label for="age" class="form-label">Age Next Birthday</label>
+			<input type="number" class="form-control" id="age" [(ngModel)]="age" name="age" min="1" required (input)="onInputChange()">
+			<div *ngIf="formTouched && !age" class="text-danger">Age is required.</div>
+		</div>
+		<div class="mb-3">
+			<label for="dob" class="form-label">Date of Birth (mm/YYYY)</label>
+			<input type="text" class="form-control" id="dob" [(ngModel)]="dob" name="dob" pattern="^(0[1-9]|1[0-2])\/\d{4}$" required (input)="onInputChange()" placeholder="mm/YYYY">
+			<div *ngIf="formTouched && !dob" class="text-danger">Date of Birth is required.</div>
+		</div>
+		<div class="mb-3">
+			<label for="occupation" class="form-label">Usual Occupation</label>
+			<select class="form-select" id="occupation" [(ngModel)]="occupation" name="occupation" required (change)="onInputChange()">
+				<option [ngValue]="null">Select Occupation</option>
+				<option *ngFor="let occ of occupations" [ngValue]="occ">{{ occ.name }}</option>
+			</select>
+			<div *ngIf="formTouched && !occupation" class="text-danger">Occupation is required.</div>
+		</div>
+		<div class="mb-3">
+			<label for="sumInsured" class="form-label">Death – Sum Insured</label>
+			<input type="number" class="form-control" id="sumInsured" [(ngModel)]="sumInsured" name="sumInsured" min="1" required (input)="onInputChange()">
+			<div *ngIf="formTouched && !sumInsured" class="text-danger">Sum Insured is required.</div>
+		</div>
+		<div class="mb-3">
+			<label class="form-label">Monthly Premium</label>
+			<div class="form-control bg-light" readonly>
+				<span *ngIf="premium !== null">{{ premium | number:'1.2-2' }}</span>
+				<span *ngIf="premium === null">--</span>
+			</div>
+		</div>
+	</form>
+</div>
