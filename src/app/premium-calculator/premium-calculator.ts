@@ -1,72 +1,42 @@
 import { Component } from '@angular/core';
 import { CommonModule, DecimalPipe } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-
-interface Occupation {
-  name: string;
-  rating: 'Professional' | 'White Collar' | 'Light Manual' | 'Heavy Manual';
-}
+import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { OCCUPATIONS, RATING_FACTORS, Occupation } from './premium-calculator.config';
+import { debounceTime } from 'rxjs/operators';
+import { PremiumCalculatorService } from './premium-calculator.service';
 
 @Component({
   selector: 'app-premium-calculator',
   standalone: true,
-  imports: [CommonModule, FormsModule, DecimalPipe],
+  imports: [CommonModule, ReactiveFormsModule, DecimalPipe],
   templateUrl: './premium-calculator.html',
-  styleUrl: './premium-calculator.css'
+  styleUrls: ['./premium-calculator.css']
 })
 export class PremiumCalculator {
-  name = '';
-  age: number | null = null;
-  dob = '';
-  occupation: Occupation | null = null;
-  sumInsured: number | null = null;
+  form: FormGroup;
+  occupations: Occupation[] = OCCUPATIONS;
+  ratingFactors: Record<string, number> = RATING_FACTORS;
   premium: number | null = null;
-  formTouched = false;
+  premiumError: string | null = null;
 
-  occupations: Occupation[] = [
-    { name: 'Cleaner', rating: 'Light Manual' },
-    { name: 'Doctor', rating: 'Professional' },
-    { name: 'Author', rating: 'White Collar' },
-    { name: 'Farmer', rating: 'Heavy Manual' },
-    { name: 'Mechanic', rating: 'Heavy Manual' },
-    { name: 'Florist', rating: 'Light Manual' },
-    { name: 'Other', rating: 'Heavy Manual' }
-  ];
-
-  ratingFactors: Record<string, number> = {
-    'Professional': 1.5,
-    'White Collar': 2.25,
-    'Light Manual': 11.5,
-    'Heavy Manual': 31.75
-  };
-
-  onInputChange() {
-    this.formTouched = true;
-    this.calculatePremium();
+  constructor(readonly fb: FormBuilder, readonly premiumService: PremiumCalculatorService) {
+    this.form = this.fb.group({
+      name: ['', Validators.required],
+      age: [null, [Validators.required, Validators.min(1)]],
+      dob: ['', [Validators.required, Validators.pattern(/^(0[1-9]|1[0-2])\/\d{4}$/)]],
+      occupation: [null, Validators.required],
+      sumInsured: [null, [Validators.required, Validators.min(1)]]
+    });
+    this.form.valueChanges.subscribe(() => this.calculatePremium());
+    this.form.valueChanges.pipe(debounceTime(200)).subscribe(() => this.calculatePremium());
   }
 
   calculatePremium() {
-    if (
-      this.name &&
-      this.age &&
-      this.dob &&
-      this.occupation &&
-      this.sumInsured
-    ) {
-      const factor = this.ratingFactors[this.occupation.rating];
-      this.premium = (this.sumInsured * factor * this.age) / 1000 * 12;
+    if (this.form.valid) {
+      const { age, occupation, sumInsured } = this.form.value;
+      this.premium = this.premiumService.calculatePremium(age, occupation, sumInsured);
     } else {
       this.premium = null;
     }
-  }
-
-  isFormValid() {
-    return !!(
-      this.name &&
-      this.age &&
-      this.dob &&
-      this.occupation &&
-      this.sumInsured
-    );
   }
 }
