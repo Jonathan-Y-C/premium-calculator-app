@@ -129,6 +129,63 @@ describe('PremiumCalculator', () => {
     component.calculatePremium();
     expect(component.premium).toBeNull();
   });
+
+  it('should calculate premium for boundary values (age=1, sumInsured=1)', () => {
+    component.form.setValue({
+      name: 'Boundary',
+      age: 1,
+      dob: '01/2024',
+      occupation: OCCUPATIONS[0],
+      sumInsured: 1
+    });
+    component.calculatePremium();
+    const expected = (1 * RATING_FACTORS[OCCUPATIONS[0].rating] * 1) / 1000 * 12;
+    expect(component.premium).toBeCloseTo(expected, 2);
+  });
+
+  it('should return null for occupation not in config (simulate env override)', () => {
+    const fakeOccupation = { name: 'Astronaut', rating: 'Professional' };
+    component.form.setValue({
+      name: 'Test',
+      age: 30,
+      dob: '01/1995',
+      occupation: fakeOccupation,
+      sumInsured: 10000
+    });
+    component.calculatePremium();
+    expect(component.premium).toBeNull();
+  });
+
+  it('should return null for missing rating factor', () => {
+    // Simulate missing rating factor by removing it from RATING_FACTORS
+    const occ = { name: 'Doctor', rating: 'Professional' };
+    const originalFactor = RATING_FACTORS['Professional'];
+    delete RATING_FACTORS['Professional'];
+    component.form.setValue({
+      name: 'Test',
+      age: 30,
+      dob: '01/1995',
+      occupation: occ,
+      sumInsured: 10000
+    });
+    component.calculatePremium();
+    expect(component.premium).toBeNull();
+    // Restore rating factor for other tests
+    RATING_FACTORS['Professional'] = originalFactor;
+  });
+
+  it('should handle large values for age and sumInsured', () => {
+    component.form.setValue({
+      name: 'Big',
+      age: 120,
+      dob: '01/1905',
+      occupation: OCCUPATIONS[1],
+      sumInsured: 10000000
+    });
+    component.calculatePremium();
+    const expected = (10000000 * RATING_FACTORS[OCCUPATIONS[1].rating] * 120) / 1000 * 12;
+    expect(component.premium).toBeCloseTo(expected, 2);
+  });
 });
 
 describe('PremiumCalculatorService', () => {
