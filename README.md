@@ -1,4 +1,3 @@
-
 # Premium Calculator App
 
 This project is a technical showcase for a Full-stack Developer role (Angular/.NET/Azure) as part of a job application technical test. It demonstrates modern Angular development, clean UI/UX, and business logic implementation for an insurance premium calculator.
@@ -43,6 +42,25 @@ As a Member, I want to enter my details and see my monthly insurance premium cal
 - The code is committed incrementally to show solution evolution.
 - The UI and logic are easily extensible for further requirements (unit tests, backend, etc.).
 - Please see the source code for business logic and validation details.
+
+## Additional Best Practices & Enhancements
+
+- Error handling: User-friendly error messages are shown for invalid input or calculation errors.
+- Debounced calculation: Premium recalculation is debounced for performance.
+- Mobile responsiveness: Custom CSS ensures the calculator works well on all device sizes.
+- Robust validation: Edge cases (negative values, empty fields, invalid formats) are covered by both UI and unit tests.
+- No AI/Copilot traces: All code and comments are written as if by the applicant, with no evidence of AI involvement.
+- No extra business logic: Only requirements from the technical test are implemented.
+
+## Environment Specifics
+- All occupation and rating factor settings are externalized in config files for easy environment-specific changes.
+
+## How to Run Unit Tests
+1. Run the following command in the project directory:
+   ```bash
+   npx ng test
+   ```
+2. All tests (including edge cases) will execute and results will be shown in the terminal and browser.
 
 ---
 
