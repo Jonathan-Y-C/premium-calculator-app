@@ -4,7 +4,11 @@ export interface Occupation {
 }
 
 // Support environment-specific overrides
-const globalEnv = typeof window !== 'undefined' ? (window as any)['env'] || {} : {};
+interface GlobalEnv {
+  OCCUPATIONS?: Occupation[];
+  RATING_FACTORS?: Record<string, number>;
+}
+const globalEnv: GlobalEnv = typeof window !== 'undefined' && (window as unknown as { [key: string]: unknown })['env'] ? (window as unknown as { [key: string]: unknown })['env'] as GlobalEnv : {};
 
 export const OCCUPATIONS: Occupation[] = globalEnv.OCCUPATIONS || [
   { name: 'Cleaner', rating: 'Light Manual' },

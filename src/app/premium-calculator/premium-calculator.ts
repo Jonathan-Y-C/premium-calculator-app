@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule, DecimalPipe } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { OCCUPATIONS, RATING_FACTORS, Occupation } from './premium-calculator.config';
@@ -19,7 +19,10 @@ export class PremiumCalculator {
   premium: number | null = null;
   premiumError: string | null = null;
 
-  constructor(readonly fb: FormBuilder, readonly premiumService: PremiumCalculatorService) {
+  fb = inject(FormBuilder);
+  premiumService = inject(PremiumCalculatorService);
+
+  constructor() {
     this.form = this.fb.group({
       name: ['', Validators.required],
       age: [null, [Validators.required, Validators.min(1)]],

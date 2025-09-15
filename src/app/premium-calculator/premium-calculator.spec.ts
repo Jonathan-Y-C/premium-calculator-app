@@ -23,7 +23,7 @@ describe('PremiumCalculator', () => {
   });
 
   it('should have all required occupations', () => {
-    const names = component.occupations.map((o: any) => o.name);
+    const names = component.occupations.map((o: Occupation) => o.name);
     expect(names).toEqual(OCCUPATIONS.map(o => o.name));
   });
 
@@ -195,15 +195,15 @@ describe('PremiumCalculatorService', () => {
   });
 
   it('should return null for invalid input', () => {
-    expect(service.calculatePremium(null as any, null as any, null as any)).toBeNull();
-    expect(service.calculatePremium(-1, { name: 'Doctor', rating: 'Professional' as 'Professional' } as Occupation, 10000)).toBeNull();
-    expect(service.calculatePremium(30, null as any, 10000)).toBeNull();
-    expect(service.calculatePremium(30, { name: 'Doctor', rating: 'Professional' as 'Professional' } as Occupation, 0)).toBeNull();
-    expect(service.calculatePremium(30, { name: 'Unknown', rating: 'Heavy Manual' as 'Heavy Manual' } as Occupation, 10000)).toBeNull();
+    expect(service.calculatePremium(null as unknown as number, null as unknown as Occupation, null as unknown as number)).toBeNull();
+    expect(service.calculatePremium(-1, { name: 'Doctor', rating: 'Professional' as const }, 10000)).toBeNull();
+    expect(service.calculatePremium(30, null as unknown as Occupation, 10000)).toBeNull();
+    expect(service.calculatePremium(30, { name: 'Doctor', rating: 'Professional' as const }, 0)).toBeNull();
+    expect(service.calculatePremium(30, { name: 'Unknown', rating: 'Heavy Manual' as const }, 10000)).toBeNull();
   });
 
   it('should calculate correct premium for valid input', () => {
-    const occ: Occupation = { name: 'Doctor', rating: 'Professional' as 'Professional' };
+    const occ: Occupation = { name: 'Doctor', rating: 'Professional' as const };
     expect(service.calculatePremium(30, occ, 10000)).toBeCloseTo((10000 * 1.5 * 30) / 1000 * 12, 2);
   });
 });
